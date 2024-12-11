@@ -17,10 +17,10 @@ const ctx = canvas.getContext('2d');
 
 // Игрок
 const player = {
-  x: canvas.width/2 - 25,
-  y: canvas.height - 80,
-  width: 50,
-  height: 70,
+  x: canvas.width / 2 - 50, // чтобы центрировать персонажа примерно по центру в начале
+  y: canvas.height - 120,   // немного выше нижнего края
+  width: 100,
+  height: 100,
   speed: 5,
   dx: 0
 };
@@ -31,21 +31,15 @@ const objects = []; // массив падающих объектов
 let spawnTimer = 0;
 const spawnInterval = 60; // каждые 60 кадров новый объект
 
-// Изображения (предполагается, что они у вас есть в папке img)
+// Изображения (предполагается, что они в папке img)
 const poroshenkoImg = new Image();
-poroshenkoImg.src = 'img/poroshenko.png';  // спрайт персонажа
+poroshenkoImg.src = 'img/poroshenko.png';  // квадратное изображение персонажа
 const candyImg = new Image();
 candyImg.src = 'img/candy.png';
 const moneyImg = new Image();
 moneyImg.src = 'img/money.png';
 const handcuffImg = new Image();
 handcuffImg.src = 'img/handcuff.png';
-
-// Параметры анимации персонажа (если вы их используете)
-player.frame = 0;           // текущий кадр
-player.frameCount = 3;      // всего кадров
-player.frameDelay = 10;     // задержка между кадрами
-player.frameTimer = 0;
 
 document.addEventListener('keydown', (e) => {
   if(e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
@@ -84,9 +78,8 @@ function spawnObject() {
     }
   }
   
-  const size = 30;
+  const size = 50; // увеличиваем размер объектов
   
-  // Создаём основной объект
   let mainObj = {
     type: chosenType.type,
     img: chosenType.img,
@@ -98,24 +91,6 @@ function spawnObject() {
   };
   
   objects.push(mainObj);
-
-  // Если выпали деньги, добавляем наручники
-  if (chosenType.type === 'money') {
-    // Допустим, создадим 1 или 2 наручника рядом
-    let numHandcuffs = Math.random() < 0.5 ? 1 : 2;
-    for (let i = 0; i < numHandcuffs; i++) {
-      let offsetX = (Math.random() * 60 - 30); // смещение по X от центра денег
-      objects.push({
-        type: 'handcuff',
-        img: handcuffImg,
-        x: mainObj.x + offsetX,
-        y: mainObj.y - 10, // чуть выше или на том же уровне
-        width: size,
-        height: size,
-        speed: mainObj.speed + Math.random() * 0.5 // скорость может быть немного разной
-      });
-    }
-  }
 }
 
 function update() {
@@ -158,33 +133,14 @@ function update() {
       objects.splice(i, 1);
     }
   }
-  
-  // Анимация персонажа
-  if (player.dx !== 0) {
-    player.frameTimer++;
-    if (player.frameTimer >= player.frameDelay) {
-      player.frameTimer = 0;
-      player.frame++;
-      if (player.frame >= player.frameCount) {
-        player.frame = 0;
-      }
-    }
-  } else {
-    player.frame = 0;
-  }
 }
 
 function draw() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
   
-  // Отрисовка игрока (если у вас есть спрайт анимации)
-  const frameWidth = 50;
-  const frameHeight = 70;
-  ctx.drawImage(
-    poroshenkoImg, 
-    player.frame * frameWidth, 0, frameWidth, frameHeight, 
-    player.x, player.y, player.width, player.height
-  );
+  // Отрисовка игрока — теперь без анимации, просто 1 кадр
+  // Предполагается, что поросёнок — квадратное изображение, мы его уменьшаем до 100x100
+  ctx.drawImage(poroshenkoImg, player.x, player.y, player.width, player.height);
   
   // Объекты
   for (let obj of objects) {
